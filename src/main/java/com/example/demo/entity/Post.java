@@ -3,6 +3,8 @@ package com.example.demo.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -23,6 +25,19 @@ public class Post extends AuditModel {
     @NotNull
     @Lob
     private String content;
+
+    @OneToMany(cascade = CascadeType.ALL,
+    fetch = FetchType.LAZY,
+    mappedBy = "post")
+    private Set<Comment> comments = new HashSet<>();
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
 
     public Long getId() {
         return id;

@@ -14,11 +14,15 @@ import javax.validation.Valid;
 
 @RestController
 public class CommentController {
-    @Autowired
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
+
+    private final PostRepository postRepository;
 
     @Autowired
-    private PostRepository postRepository;
+    public CommentController(CommentRepository commentRepository, PostRepository postRepository) {
+        this.commentRepository = commentRepository;
+        this.postRepository = postRepository;
+    }
 
     @GetMapping("/posts/{postId}/comments")
     public Page<Comment> getAllCommentsByPostId(@PathVariable("postId") Long postId, Pageable pageable) {
@@ -29,6 +33,9 @@ public class CommentController {
     public Comment createComment(@PathVariable("postId") Long postId, @Valid @RequestBody Comment commentRequest) {
         return postRepository.findById(postId).map(post -> {
             commentRequest.setPost(post);
+//            这里不能同时使用，否则会重复添加
+//            post.getComments().add(commentRequest);
+//            postRepository.save(post);
             return commentRepository.save(commentRequest);
         }).orElseThrow(() -> new ResourceNotFoundException("PostId " + postId + " not found"));
     }
